@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "designWidth": 800,
+    "designHeight": 2600
+  },
+  "zones": [
+    {
+      "id": "ap-00",
+      "label": "Apartment 0",
+      "type": "apartment",
+      "rect": { "xPct": 58.0, "yPct": 3.0, "wPct": 21.0, "hPct": 4.1 },
+      "action": "open-ap0"
+    },
+    {
+      "id": "ap-01",
+      "label": "Apartment 1",
+      "type": "apartment",
+      "rect": { "xPct": 8.0, "yPct": 15.5, "wPct": 21.0, "hPct": 4.1 },
+      "action": "open-ap1"
+    },
+    {
+      "id": "ap-02",
+      "label": "Apartment 2",
+      "type": "apartment",
+      "rect": { "xPct": 8.0, "yPct": 28.5, "wPct": 21.0, "hPct": 4.1 },
+      "action": "open-ap2"
+    },
+    {
+      "id": "ap-03",
+      "label": "Apartment 3",
+      "type": "apartment",
+      "rect": { "xPct": 8.0, "yPct": 41.5, "wPct": 21.0, "hPct": 4.1 },
+      "action": "open-ap3"
+    }
+  ]
+}
