@@ -1,12 +1,15 @@
-/* Phase 1 scaffold (background only) */
+/* /src/styles/scaffold.css */
 
-/* Original pixel-art logical canvas (v1 assets are 200×650).
-   We'll start with fixed 4× scale in Phase 1, switch to computed scale in Phase 2. */
 :root {
+  /* design-space: 200×650 scaled ×4 = 800×2600 */
   --design-w: 200px;
   --design-h: 650px;
   --scale: 4;
+
+  /* runtime from JS */
+  --computed-scale: 1;
 }
+
 
 html, body { height: 100%; }
 body {
@@ -19,6 +22,8 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
+  height: calc(var(--design-h) * var(--scale) * var(--computed-scale));
+  overflow: hidden;
 }
 
 .stage {
