@@ -5,6 +5,28 @@
   },
   "zones": [
     {
+      "id": "bb-prev",
+      "label": "Billboard Prev",
+      "type": "control",
+      "rect": { "xPct": 40.5, "yPct": 6.0, "wPct": 8.0, "hPct": 2.4 },
+      "action": "control-prev"
+    },
+    {
+      "id": "bb-play",
+      "label": "Billboard Play/Pause",
+      "type": "control",
+      "rect": { "xPct": 52.0, "yPct": 6.0, "wPct": 10.0, "hPct": 2.4 },
+      "action": "control-play-toggle"
+    },
+    {
+      "id": "bb-next",
+      "label": "Billboard Next",
+      "type": "control",
+      "rect": { "xPct": 66.0, "yPct": 6.0, "wPct": 8.0, "hPct": 2.4 },
+      "action": "control-next"
+    },
+
+    {
       "id": "ap-00",
       "label": "Apartment 0",
       "type": "apartment",

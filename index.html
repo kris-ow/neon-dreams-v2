@@ -9,54 +9,23 @@
   <body>
     <main class="page">
       <div class="stage" aria-hidden="true">
-        <img
-          class="layer city"
-          src="/assets/images/city-background.png"
-          alt="City Background"
-          loading="eager"
-        />
-        <img 
-          class="layer building"
-          src="/assets/images/building.png"
-          alt="Building"
-          loading="eager"
-        />
-        <img
-          class="layer billboard-frame"
-          src="/assets/images/billboard/building-billboard.png"
-          alt="Billboard Frame"
-          loading="eager"
-        />
-        <img 
-          class="layer billboard-content"
-          src="/assets/images/billboard/building-billboard-content.png"
-          alt="Billboard Content"
-          loading="eager"
-        />
-        <img
-          class="layer apartment ap-00"
-          src="/assets/images/apartments/ap-00/apartment-0.png"
-          alt="Apartment 0"
-          loading="eager"
-        />
-        <img
-          class="layer apartment ap-01"
-          src="/assets/images/apartments/ap-01/apartment-1-frame1.png"
-          alt="Apartment 1"
-          loading="eager"
-        />
-        <img
-          class="layer apartment ap-02"
-          src="/assets/images/apartments/ap-02/apartment-2.png"
-          alt="Apartment 2"
-          loading="eager"
-        />
-        <img
-          class="layer apartment ap-03"
-          src="/assets/images/apartments/ap-03/apartment-3.png"
-          alt="Apartment 3"
-          loading="eager"
-        />
+        <!-- Background (critical -> no lazy) -->
+        <img class="layer city" src="/assets/images/city-background.png" alt="City Background" loading="eager"/>
+
+        <!-- Building -->
+        <img class="layer building" src="/assets/images/building.png" alt="Building" loading="eager"/>
+
+        <!-- Billboard -->
+        <img class="layer billboard-frame" src="/assets/images/billboard/building-billboard.png" alt="Billboard Frame" loading="eager"/>
+        <img class="layer billboard-content" src="/assets/images/billboard/building-billboard-content.png" alt="Billboard Content" loading="eager"/>
+
+        <!-- Button images (off states) -->
+
+        <!-- Apartments (non-critical -> lazy OK) -->
+        <img class="layer apartment ap-00" src="/assets/images/apartments/ap-00/apartment-0.png" alt="Apartment 0" loading="lazy"/>
+        <img class="layer apartment ap-01" src="/assets/images/apartments/ap-01/apartment-1-frame1.png" alt="Apartment 1" loading="lazy"/>
+        <img class="layer apartment ap-02" src="/assets/images/apartments/ap-02/apartment-2.png" alt="Apartment 2" loading="lazy"/>
+        <img class="layer apartment ap-03" src="/assets/images/apartments/ap-03/apartment-3.png" alt="Apartment 3" loading="lazy"/>
       </div>
     </main>
   </body>
