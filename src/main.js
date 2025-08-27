@@ -93,4 +93,45 @@ document.addEventListener("DOMContentLoaded", () => {
         if (stage) stage.setAttribute("data-track-index", String(index));
     })
 
+    audioPlayer.on("error", ({ error, index }) =>
+     console.warn("[audio] error (index)", index, error)
+    );
+
+    // --- Preload button art to avoid first-swap flicker
+    const btnArt = [
+    "/assets/images/billboard/building-billboard-back-off.png",
+    "/assets/images/billboard/building-billboard-back-on.png",
+    "/assets/images/billboard/building-billboard-play-off.png",
+    "/assets/images/billboard/building-billboard-play-on.png",
+    "/assets/images/billboard/building-billboard-next-off.png",
+    "/assets/images/billboard/building-billboard-next-on.png",
+    ];
+    (function preloadImages(urls) {
+    urls.forEach(src => { const im = new Image(); im.decoding = "async"; im.src = src; });
+    })(btnArt);
+
+    function installPressedHandlers(btn, attr /* "prev" | "next" */) {
+    if (!btn || !stage) return;
+    const set = (pressed) => {
+        if (pressed) stage.setAttribute(`data-${attr}`, "pressed");
+        else stage.removeAttribute(`data-${attr}`);
+    };
+    // Pointer
+    btn.addEventListener("pointerdown", () => set(true));
+    window.addEventListener("pointerup",   () => set(false));
+    btn.addEventListener("pointerleave",   () => set(false));
+    btn.addEventListener("pointercancel",  () => set(false));
+    btn.addEventListener("blur",           () => set(false));
+    // Keyboard
+    btn.addEventListener("keydown", (e) => {
+        if (e.key === " " || e.code === "Space" || e.key === "Enter") set(true);
+    });
+    btn.addEventListener("keyup", (e) => {
+        if (e.key === " " || e.code === "Space" || e.key === "Enter") set(false);
+    });
+    }
+    installPressedHandlers(btnPrev, "prev");
+    installPressedHandlers(btnNext, "next");
+
+    // Play art is driven by audio events we already emit (data-audio="playing/paused")
 });

@@ -8,21 +8,21 @@
       "id": "bb-prev",
       "label": "Billboard Prev",
       "type": "control",
-      "rect": { "xPct": 40.5, "yPct": 6.0, "wPct": 8.0, "hPct": 2.4 },
+      "rect": { "xPct": 42.5, "yPct": 6.6, "wPct": 8.0, "hPct": 1.7 },
       "action": "control-prev"
     },
     {
       "id": "bb-play",
       "label": "Billboard Play/Pause",
       "type": "control",
-      "rect": { "xPct": 52.0, "yPct": 6.0, "wPct": 10.0, "hPct": 2.4 },
+      "rect": { "xPct": 55.7, "yPct": 6.1, "wPct": 7.9, "hPct": 2.6 },
       "action": "control-play-toggle"
     },
     {
       "id": "bb-next",
       "label": "Billboard Next",
       "type": "control",
-      "rect": { "xPct": 66.0, "yPct": 6.0, "wPct": 8.0, "hPct": 2.4 },
+      "rect": { "xPct": 68.4, "yPct": 6.6, "wPct": 8.0, "hPct": 1.7 },
       "action": "control-next"
     },
 

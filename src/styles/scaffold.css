@@ -49,6 +49,8 @@ body {
 .building { z-index: 20; }
 .billboard-frame { z-index: 30; }
 .billboard-content { z-index: 40; }
+.billboard-btn { z-index: 45;}
+.billboard-btn-on { z-index: 46; opacity: 0;}
 .apartment { z-index: 50; }
 .controls-layer { z-index: 60; }
 
@@ -82,3 +84,19 @@ body {
   outline-offset: 0;
   border-radius: 2px;
 }
+
+/* PLAY: reflect audio state from stage[data-audio] */
+.stage[data-audio="playing"] .billboard-play-on  { opacity: 1; }
+.stage[data-audio="playing"] .billboard-play-off { opacity: 0; }
+.stage[data-audio="paused"]  .billboard-play-on  { opacity: 0; }
+.stage[data-audio="paused"]  .billboard-play-off { opacity: 1; }
+
+/* PREV/NEXT: show 'on' only while pressed */
+.stage[data-prev="pressed"] .billboard-prev-on  { opacity: 1; }
+.stage[data-prev="pressed"] .billboard-prev-off { opacity: 0; }
+
+.stage[data-next="pressed"] .billboard-next-on  { opacity: 1; }
+.stage[data-next="pressed"] .billboard-next-off { opacity: 0; }
+
+/* Optional: ensure there are no fades—swap must be instant */
+.billboard-btn, .billboard-btn-on { transition: none; }
