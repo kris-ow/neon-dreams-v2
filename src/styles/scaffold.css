@@ -45,6 +45,7 @@ body {
   image-rendering: crisp-edges;
 }
 
+/* Layering */
 .city { z-index: 10; }
 .building { z-index: 20; }
 .billboard-frame { z-index: 30; }
@@ -53,16 +54,11 @@ body {
 .billboard-btn-on { z-index: 46; opacity: 0;}
 .apartment { z-index: 50; }
 .controls-layer { z-index: 60; }
+.zone-overlay {  z-index: 1000; }
 
 .layer { pointer-events: none; }
 
-.zone-overlay {
-  z-index: 1000;
-}
-
-.zone-box {
-  border: 1px dashed rgba(0, 255, 255, 0.9)
-}
+.zone-box {  border: 1px dashed rgba(0, 255, 255, 0.9); }
 
 .zone-label {
   position: absolute;
@@ -113,3 +109,13 @@ body {
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* Parallax (background-only) */
+.city {
+  will-change: transform; /* compositor-only transforms, no layout thrash */
+}
+
+/* Debug hook (optional visual switch): 
+   you'll toggle [data-parallax="on|off"] from JS in later steps */
+.stage[data-parallax="on"]  { outline: 0; }  /* no visible change by default */
+.stage[data-parallax="off"] { outline: 0; }

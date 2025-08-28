@@ -1,0 +1,6 @@
+{
+  "meta": { "ampX": 10, "ampY": 6, "smooth": 0.12 },
+  "layers": [
+    { "selector": ".city", "depth": 1.0 }
+  ]
+}
