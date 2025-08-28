@@ -17,6 +17,8 @@ export function createControlsView({ stage, zonesData, adapter }) {
   layer.style.pointerEvents = "none";
   layer.style.width = `${designWidth}px`;
   layer.style.height = `${designHeight}px`;
+  layer.setAttribute("role", "toolbar");
+  layer.setAttribute("aria-label", "Billboard controls");
   stage.appendChild(layer);
 
   // Simple emitter
@@ -94,6 +96,7 @@ export function createControlsView({ stage, zonesData, adapter }) {
     return {
         onControl(fn) {listeners.add(fn); return () => listeners.delete(fn); },
         getButton(id) { return btns.get(id)?.btn || null; },
+        getContainer() { return layer; },
         destroy() {
             off();
             listeners.clear();

@@ -11,6 +11,7 @@ export function initBillboardControls({ stage, controls, audioPlayer, assets = [
   const btnPrev = controls.getButton("bb-prev");
   const btnPlay = controls.getButton("bb-play");
   const btnNext = controls.getButton("bb-next");
+  const container = controls.getContainer() ? controls.getContainer() : null;
 
   // Initial state -> DOM
   const state = audioPlayer.getState();
@@ -25,6 +26,36 @@ export function initBillboardControls({ stage, controls, audioPlayer, assets = [
     btnPlay.dataset.state = isPlaying ? "on" : "off";
   }
   updatePlayButtonState(state.isPlaying);
+
+  // A11Y: Roving tabindex inside a toolbar
+  // One tab stop enters the group; use Left/Right/Home/End to move focus.
+  const ordered = [btnPrev, btnPlay, btnNext].filter(Boolean);
+  // Set initial roving target (prefer Play if present)
+  let currentIndex = Math.max(0, ordered.indexOf(btnPlay));
+  if (ordered.length) {
+    ordered.forEach((b, i) => b.tabIndex = (i === currentIndex ? 0 : -1));
+    if (container) {
+      container.setAttribute("role", "toolbar");            // defensive
+      container.setAttribute("aria-label", "Billboard controls");
+    }
+    const moveTo = (i) => {
+      if (!ordered.length) return;
+      const next = (i + ordered.length) % ordered.length;
+      ordered[currentIndex].tabIndex = -1;
+      ordered[next].tabIndex = 0;
+      ordered[next].focus();
+      currentIndex = next;
+    };
+    const onNavKey = (e) => {
+      switch (e.key) {
+        case "ArrowRight": case "Right": e.preventDefault(); moveTo(currentIndex + 1); break;
+        case "ArrowLeft":  case "Left":  e.preventDefault(); moveTo(currentIndex - 1); break;
+        case "Home":                       e.preventDefault(); moveTo(0); break;
+        case "End":                        e.preventDefault(); moveTo(ordered.length - 1); break;
+      }
+    };
+    ordered.forEach((b) => b.addEventListener("keydown", onNavKey));
+  }
 
   // Controls -> audio
   const offControl = controls.onControl(({ action }) => {
@@ -51,6 +82,23 @@ export function initBillboardControls({ stage, controls, audioPlayer, assets = [
   offs.push(audioPlayer.on("error", ({ error, index }) => {
     // Keep a breadcrumb in dev; safe to remove later
     console.warn("[audio] error (index)", index, error);
+  }));
+
+  // A11Y: polite live region to announce state/track changes for SR users
+  const sr = document.createElement("div");
+  sr.className = "sr-only";
+  sr.setAttribute("aria-live", "polite");
+  stage.appendChild(sr);
+  const baseName = (src) => (src?.split("/").pop() || "").replace(/\.[a-z0-9]+$/i, "").replace(/[-_]/g, " ");
+  const announceState = () => {
+    const st = audioPlayer.getState();
+    const name = baseName(st?.track?.src);
+    sr.textContent = st.isPlaying ? (name ? `Playing: ${name}` : "Playing") : "Paused";
+  };
+  offs.push(audioPlayer.on("playing", announceState));
+  offs.push(audioPlayer.on("paused",  announceState));
+  offs.push(audioPlayer.on("trackchange", ({ index, track }) => {
+    sr.textContent = `Track ${index + 1}${track?.src ? `: ${baseName(track.src)}` : ""}`;
   }));
 
   // Preload images to avoid flicker
