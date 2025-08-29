@@ -10,6 +10,24 @@ import { initBillboardControls } from './modules/billboardControls.js';
 import { createParallax } from "./modules/parallax.js";
 import { createPopupDialog } from './modules/popupDialog.js';
 
+const DIALOGS_REGISTRY = {
+    "ap-00": {
+        title: "Apartment 0",
+        content: `
+            <p>Welcome to Apartment 0!</p>
+        `,
+        closeLabel: "Close dialog"
+    },
+    "ap-03": {
+        title: "Apartment 3",
+        content: `
+            <p>Welcome to Apartment 3!</p>
+            <p>This is a classy space with a beautiful view.</p>
+        `,
+        closeLabel: "Close dialog"
+    },
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const stage = document.querySelector(".stage");
     const designWidth = zonesData?.meta?.designWidth ?? 800;
@@ -19,7 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     createDevOverlay({ stage, zonesData, adapter, initiallyVisible: true });
 
-    const controls = createControlsView({ stage, zonesData, adapter });
+    // Create controls with enabled apartments derived from the registry keys
+    const enabledApartmentIds = Object.keys(DIALOGS_REGISTRY);
+
+    const controls = createControlsView({ stage, zonesData, adapter, enabledApartments: enabledApartmentIds });
     controls.onControl(({ id, action }) => {
         console.log("[controls] activated:", { id, action });
     });
@@ -63,23 +84,32 @@ document.addEventListener("DOMContentLoaded", () => {
         ]
     });
 
-    // Create the dialog
-    const ap3Dialog = createPopupDialog({
-        id: "ap3",
-        title: "Apartment 3",
-        content: `
-            <p>Welcome to Apartment 3!</p>
-            <p>This is a classy space with a beautiful view.</p>
-        `,
-        closeLabel: "Close dialog",
-        stage,
-    });
+    // Lazy dialog cache
+    const dialogs = new Map();
+    function ensureDialog(apId) {
+        if (dialogs.has(apId)) return dialogs.get(apId);
+        const cfg = DIALOGS_REGISTRY[apId];
+        if (!cfg) return null;
 
-    // Open the dialog
+        const dlg = createPopupDialog({
+            id: apId.replace("ap-", "ap"), // unique id namespace for aria/title ids
+            title: cfg.title,
+            content: cfg.content,
+            closeLabel: "Close dialog",
+            stage, // so background can be made inert
+        });
+
+        dialogs.set(apId, dlg);
+        return dlg;
+    }
+
+    // Open matching dialog for any enabled apartment
     controls.onControl(({ id, action }) => {
-        if (id === "ap-03" && action === "open-ap3") {
-            ap3Dialog.open();
-        }
+    // Example: action === "open-ap3" and id === "ap-03" (zones.json)
+    if (id in DIALOGS_REGISTRY && action?.startsWith("open-ap")) {
+        const dlg = ensureDialog(id);
+        dlg?.open();
+    }
     });
 
 });

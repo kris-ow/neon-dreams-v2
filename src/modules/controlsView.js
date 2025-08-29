@@ -4,7 +4,7 @@
 // - Adds accessible buttons for type: "apartment" (hotspots)
 // Positions are computed from % rects -> design-space px, then pixel-snapped with adapter scale.
 
-export function createControlsView({ stage, zonesData, adapter }) {
+export function createControlsView({ stage, zonesData, adapter, enabledApartments }) {
   if (!stage) throw new Error("controlsView: missing stage element");
   if (!zonesData?.meta) throw new Error("controlsView: missing zones meta");
 
@@ -12,10 +12,12 @@ export function createControlsView({ stage, zonesData, adapter }) {
   const zones = zonesData.zones || [];
 
   // Only these apartments get interactive buttons (Phase 5 exemplar)
-  const enabledApartments = new Set(["ap-03"]);
+  const enabledSet = new Set(
+    Array.isArray(enabledApartments) ? enabledApartments : (enabledApartments ?? [])
+  );
 
   const controlZones = zones.filter(z => z.type === "control");
-  const apartmentZones = zones.filter(z => z.type === "apartment" && enabledApartments.has(z.id));
+  const apartmentZones = zones.filter(z => z.type === "apartment" && enabledSet.has(z.id));
 
   // Root container (keeps old className & semantics so nothing upstream breaks)
   const root = document.createElement("div");
