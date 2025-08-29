@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ]
     });
 
-    // Popup dialog
+    // Create the dialog
     const ap3Dialog = createPopupDialog({
         id: "ap3",
         title: "Apartment 3",
@@ -71,7 +71,15 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Welcome to Apartment 3!</p>
             <p>This is a classy space with a beautiful view.</p>
         `,
-        closeLabel: "Close dialog"
+        closeLabel: "Close dialog",
+        stage,
     });
-    
+
+    // Open the dialog
+    controls.onControl(({ id, action }) => {
+        if (id === "ap-03" && action === "open-ap3") {
+            ap3Dialog.open();
+        }
+    });
+
 });
