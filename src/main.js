@@ -11,6 +11,8 @@ import { createParallax } from "./modules/parallax.js";
 import { initAudio } from "./modules/initAudio.js";
 import { initApartmentDialogs } from "./modules/initApartmentDialogs.js";
 import { initKeyboardShortcuts } from "./modules/keyboardShortcuts.js";
+import { enableArrowNavigation } from "./modules/hotspotArrowNav.js";
+
 
 // === CONTENT LIVES HERE ===============================================
 // Audio playlist
@@ -34,7 +36,7 @@ const DIALOGS_REGISTRY = {
           class="modal__img"
           src="/assets/images/apartments/ap-03/apartment-3-inside.png"
           alt="Interior of Apartment 3"
-          loading="lazy"
+          loading="eager"
         />
       </figure>
     `,
@@ -66,6 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Audio + billboard (playlist from main.js)
   initAudio({ stage, controls, playlist: PLAYLIST });
+
+  // Arrow-key navigation across enabled apartment buttons
+  enableArrowNavigation({ container: controls.getContainer(), selector: ".apartment-btn" });
 
   // Apartment dialogs (registry from main.js)
   initApartmentDialogs({ stage, controls, registry: DIALOGS_REGISTRY });
