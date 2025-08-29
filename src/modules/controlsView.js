@@ -11,8 +11,11 @@ export function createControlsView({ stage, zonesData, adapter }) {
   const { designWidth, designHeight } = zonesData.meta;
   const zones = zonesData.zones || [];
 
+  // Only these apartments get interactive buttons (Phase 5 exemplar)
+  const enabledApartments = new Set(["ap-03"]);
+
   const controlZones = zones.filter(z => z.type === "control");
-  const apartmentZones = zones.filter(z => z.type === "apartment");
+  const apartmentZones = zones.filter(z => z.type === "apartment" && enabledApartments.has(z.id));
 
   // Root container (keeps old className & semantics so nothing upstream breaks)
   const root = document.createElement("div");
@@ -108,10 +111,7 @@ export function createControlsView({ stage, zonesData, adapter }) {
     btn.className = "apartment-btn";
     btn.dataset.id = zone.id;
     // A11Y: clear label for SR; keep invisible visually (dev overlay can show bounds)
-    const srLabel =
-      zone.label
-        ? `Open ${zone.label} details`
-        : `Open ${zone.id} details`;
+    const srLabel = zone.label ? `Open ${zone.label} details` : `Open ${zone.id} details`;
     btn.setAttribute("aria-label", srLabel);
     if (zone.action) btn.setAttribute("data-action", zone.action);
 
