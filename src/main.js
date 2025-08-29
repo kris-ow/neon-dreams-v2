@@ -1,11 +1,14 @@
 ﻿// src/main.js
 import './styles/scaffold.css';
 import zonesData from "./data/zones.json";
+import parallaxConfig from "./data/parallax.json";
 import { createLayoutAdapter } from "./modules/layoutAdapter.js";
 import { createDevOverlay } from "./modules/devOverlay.js";
 import { createControlsView } from "./modules/controlsView.js";
 import { createAudioPlayer } from './modules/audioPlayer.js';
 import { initBillboardControls } from './modules/billboardControls.js';
+import { createParallax } from "./modules/parallax.js";
+import { createPopupDialog } from './modules/popupDialog.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const stage = document.querySelector(".stage");
@@ -17,11 +20,20 @@ document.addEventListener("DOMContentLoaded", () => {
     createDevOverlay({ stage, zonesData, adapter, initiallyVisible: true });
 
     const controls = createControlsView({ stage, zonesData, adapter });
-
     controls.onControl(({ id, action }) => {
         console.log("[controls] activated:", { id, action });
     });
 
+    const parallax = createParallax({ stage, adapter, config: parallaxConfig });
+    // Dev toggle: press "M" to flip parallax on/off at runtime
+    window.addEventListener("keydown", (e) => {
+        if (e.key.toLowerCase() === "m") {
+            const isOn = stage.dataset.parallax === "on";
+            parallax.setEnabled(!isOn);
+            console.log(`[parallax] ${isOn ? "disabled" : "enabled"}`);
+        }
+    });
+    
     // Audio code
     const playlist = [
         "/assets/audio/highway-of-light.mp3",
@@ -50,4 +62,16 @@ document.addEventListener("DOMContentLoaded", () => {
             "/assets/images/billboard/building-billboard-next-on.png",
         ]
     });
+
+    // Popup dialog
+    const ap3Dialog = createPopupDialog({
+        id: "ap3",
+        title: "Apartment 3",
+        content: `
+            <p>Welcome to Apartment 3!</p>
+            <p>This is a classy space with a beautiful view.</p>
+        `,
+        closeLabel: "Close dialog"
+    });
+    
 });

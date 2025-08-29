@@ -8,7 +8,7 @@
       "id": "bb-prev",
       "label": "Billboard Prev",
       "type": "control",
-      "rect": { "xPct": 42.5, "yPct": 6.6, "wPct": 8.0, "hPct": 1.7 },
+      "rect": { "xPct": 43.0, "yPct": 6.75, "wPct": 7.0, "hPct": 1.4 },
       "action": "control-prev"
     },
     {
@@ -22,7 +22,7 @@
       "id": "bb-next",
       "label": "Billboard Next",
       "type": "control",
-      "rect": { "xPct": 68.4, "yPct": 6.6, "wPct": 8.0, "hPct": 1.7 },
+      "rect": { "xPct": 69.0, "yPct": 6.75, "wPct": 7.0, "hPct": 1.4 },
       "action": "control-next"
     },
 

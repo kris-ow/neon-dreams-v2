@@ -11,7 +11,11 @@
 }
 
 
-html, body { height: 100%; }
+html, body { 
+  height: 100%;
+  overflow-x: hidden
+}
+
 body {
   margin: 0;
   background: #000;
@@ -23,7 +27,6 @@ body {
   display: grid;
   place-items: center;
   height: calc(var(--design-h) * var(--scale) * var(--computed-scale));
-  overflow: hidden;
 }
 
 .stage {
@@ -111,11 +114,86 @@ body {
 }
 
 /* Parallax (background-only) */
-.city {
-  will-change: transform; /* compositor-only transforms, no layout thrash */
-}
+.city { will-change: transform; }
 
 /* Debug hook (optional visual switch): 
    you'll toggle [data-parallax="on|off"] from JS in later steps */
 .stage[data-parallax="on"]  { outline: 0; }  /* no visible change by default */
 .stage[data-parallax="off"] { outline: 0; }
+
+
+/* ===== Modal (scaffold only) ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 1000;
+}
+
+.modal[data-open="true"] {
+  display: grid;
+  place-items: center;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  will-change: opacity;
+  opacity: 1;
+}
+
+.modal__panel {
+  position: relative;
+  max-width: min(90vw, 720px);
+  max-height: min(85vh, 1200px);
+  overflow: auto;
+  padding: 20px;
+  background: #0c0f14;           /* dark, neon-friendly */
+  border: 2px solid #2ae1ff;      /* subtle neon frame */
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  will-change: transform, opacity;
+  transform: translateY(0);       /* will animate in later steps */
+  opacity: 1;
+}
+
+.modal__title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: #e6f7ff;
+}
+
+.modal__close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  inline-size: 36px;
+  block-size: 36px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #e6f7ff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal__close:focus-visible {
+  outline: 2px solid #2ae1ff;
+  outline-offset: 2px;
+}
+
+.modal__body {
+  color: #cfe8ef;
+  font-size: 0.95rem;
+}
+
+/* Reduced motion guard — we’ll add transitions in Step 6 */
+@media (prefers-reduced-motion: reduce) {
+  .modal__panel,
+  .modal__backdrop {
+    transition: none !important;
+  }
+}
