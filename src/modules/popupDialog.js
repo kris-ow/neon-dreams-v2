@@ -1,6 +1,6 @@
 // src/modules/popupDialog.js
-// Step 4: focus trap + ESC + overlay click
-// (Still includes Step 3: inert/aria-hidden + focus restore)
+// Step 5: A11Y polish — focus the title on open + aria-describedby
+// (keeps Step 4: focus trap, ESC, overlay click; Step 3: inert + focus restore)
 
 function getTabbables(root) {
   const selector = [
@@ -27,8 +27,13 @@ export function createPopupDialog({
   closeLabel = "Close dialog",
   container = document.body,
   stage = document.querySelector(".stage"),
+  // New: initial focus policy. 'title' | 'first' | 'panel'
+  initialFocus = "title",
+  // New: add aria-describedby that points to body
+  withDescribedBy = true,
 }) {
   const titleId = `dlg-title-${id}`;
+  const bodyId  = `dlg-desc-${id}`;
 
   // Wrapper
   const modal = document.createElement("div");
@@ -36,13 +41,14 @@ export function createPopupDialog({
   modal.setAttribute("role", "dialog");
   modal.setAttribute("aria-modal", "true");
   modal.setAttribute("aria-labelledby", titleId);
+  if (withDescribedBy) modal.setAttribute("aria-describedby", bodyId);
   modal.dataset.open = "false";
 
   // Backdrop
   const backdrop = document.createElement("div");
   backdrop.className = "modal__backdrop";
 
-  // Focus sentinels (visually hidden; help trap focus)
+  // Sentinels for focus trap
   const startSentinel = document.createElement("div");
   startSentinel.tabIndex = 0;
   startSentinel.setAttribute("aria-hidden", "true");
@@ -58,11 +64,12 @@ export function createPopupDialog({
   panel.className = "modal__panel";
   panel.setAttribute("tabindex", "-1");
 
-  // Title
+  // Title (make it programmatically focusable for initial announcement)
   const h2 = document.createElement("h2");
   h2.className = "modal__title";
   h2.id = titleId;
   h2.textContent = title;
+  h2.tabIndex = -1; // so we can focus it when opening
 
   // Close button
   const closeBtn = document.createElement("button");
@@ -74,11 +81,11 @@ export function createPopupDialog({
   // Body
   const body = document.createElement("div");
   body.className = "modal__body";
+  body.id = bodyId;
   if (typeof content === "string") body.innerHTML = content;
   else if (content instanceof Node) body.appendChild(content);
 
   panel.append(h2, closeBtn, body);
-  // Order: backdrop (for clicks), sentinels, panel, sentinel
   modal.append(backdrop, startSentinel, panel, endSentinel);
   container.appendChild(modal);
 
@@ -112,6 +119,16 @@ export function createPopupDialog({
 
   function moveFocusIntoDialog() {
     const { list, first } = getCycleTargets();
+
+    if (initialFocus === "title" && h2) {
+      h2.focus();
+      return;
+    }
+    if (initialFocus === "panel") {
+      panel.focus();
+      return;
+    }
+    // 'first' (or fallback): first tabbable, else panel
     if (list.length > 0) first.focus();
     else panel.focus();
   }
@@ -129,66 +146,43 @@ export function createPopupDialog({
   function open() {
     if (modal.dataset.open === "true") return;
     opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-
     modal.dataset.open = "true";
     setBackgroundInert(true);
-
     Promise.resolve().then(moveFocusIntoDialog);
   }
 
   function close() {
     if (modal.dataset.open !== "true") return;
-
     modal.dataset.open = "false";
     setBackgroundInert(false);
     restoreFocus();
   }
 
-  // --- Focus trap with sentinels and Tab wrapping
-  function handleSentinelFocus(e, which) {
+  // --- Focus trap & keys
+  function handleSentinelFocus(which) {
     if (modal.dataset.open !== "true") return;
     const { first, last, list } = getCycleTargets();
-    if (list.length === 0) {
-      panel.focus();
-      return;
-    }
-    if (which === "start") {
-      // Shift+Tab from first should land here -> send to last
-      last.focus();
-    } else {
-      // Tab from last should land here -> send to first
-      first.focus();
-    }
+    if (list.length === 0) { panel.focus(); return; }
+    if (which === "start") last.focus(); else first.focus();
   }
+  startSentinel.addEventListener("focus", () => handleSentinelFocus("start"));
+  endSentinel  .addEventListener("focus", () => handleSentinelFocus("end"));
 
-  startSentinel.addEventListener("focus", () => handleSentinelFocus(null, "start"));
-  endSentinel.addEventListener("focus", () => handleSentinelFocus(null, "end"));
-
-  // Handle Tab/Shift+Tab inside the modal
   modal.addEventListener("keydown", (e) => {
     if (modal.dataset.open !== "true") return;
 
-    // ESC to close
     if (e.key === "Escape") {
       e.stopPropagation();
       e.preventDefault();
       close();
       return;
     }
-
-    // Trap Tab within the dialog
     if (e.key === "Tab") {
       const { first, last, list } = getCycleTargets();
-
-      if (list.length === 0) {
-        e.preventDefault();
-        panel.focus();
-        return;
-      }
-
+      if (list.length === 0) { e.preventDefault(); panel.focus(); return; }
       const active = document.activeElement;
       if (e.shiftKey) {
-        if (active === first || active === panel) {
+        if (active === first || active === panel || active === h2) {
           e.preventDefault();
           last.focus();
         }
@@ -201,11 +195,9 @@ export function createPopupDialog({
     }
   });
 
-  // Overlay click to close (ignore clicks inside panel)
-  backdrop.addEventListener("click", (e) => {
-    if (modal.dataset.open !== "true") return;
-    // Click target is backdrop => outside the panel
-    close();
+  // Overlay click closes (clicks inside panel are ignored)
+  backdrop.addEventListener("click", () => {
+    if (modal.dataset.open === "true") close();
   });
 
   // Close button

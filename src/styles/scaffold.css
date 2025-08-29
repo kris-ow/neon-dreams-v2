@@ -122,85 +122,135 @@ body {
 .stage[data-parallax="off"] { outline: 0; }
 
 
-/* ===== Modal (scaffold only) ===== */
+/* ===== Modal ===== */
+/* Keep it in the DOM; hide via opacity/visibility so we can animate */
 .modal {
   position: fixed;
   inset: 0;
-  display: none;
+  display: grid;              /* center panel */
+  place-items: center;
   z-index: 1000;
 }
 
-.modal[data-open="true"] {
-  display: grid;
-  place-items: center;
+/* Closed: invisible, non-interactive */
+.modal[data-open="false"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
+/* Open: visible, interactive */
+.modal[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Backdrop fade */
 .modal__backdrop {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
   will-change: opacity;
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+}
+.modal[data-open="true"] .modal__backdrop {
   opacity: 1;
 }
 
+/* Panel slide/fade (compositor-only props) */
 .modal__panel {
-  position: relative;
+  position: relative; /* positioning context for the close button */
   max-width: min(90vw, 720px);
   max-height: min(85vh, 1200px);
   overflow: auto;
   padding: 20px;
-  background: #0c0f14;           /* dark, neon-friendly */
-  border: 2px solid #2ae1ff;      /* subtle neon frame */
+  background: #0c0f14;
+  border: 2px solid #2ae1ff;
   border-radius: 8px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  box-sizing: border-box;
+
   will-change: transform, opacity;
-  transform: translateY(0);       /* will animate in later steps */
+  transform: translateY(8px) scale(0.98);
+  opacity: 0;
+  transition: transform 180ms ease-out, opacity 180ms ease-out;
+}
+.modal[data-open="true"] .modal__panel {
+  transform: translateY(0) scale(1);
   opacity: 1;
 }
 
+/* Title (leave room for the close button) */
 .modal__title {
   margin: 0 0 0.5rem 0;
+  padding-right: 48px;       /* space for the × button */
   font-size: 1.25rem;
   line-height: 1.2;
   color: #e6f7ff;
 }
+.modal__title:focus-visible {
+  outline: 2px solid #2ae1ff;
+  outline-offset: 2px;
+}
 
+/* Close button: top-right of the panel */
 .modal__close {
   position: absolute;
-  top: 6px;
-  right: 8px;
-  inline-size: 36px;
-  block-size: 36px;
+  top: 10px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
   border: 0;
   border-radius: 6px;
   background: transparent;
   color: #e6f7ff;
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1;
   cursor: pointer;
+  z-index: 1;                /* above content */
+  display: inline-grid;
+  place-items: center;
 }
-
 .modal__close:focus-visible {
   outline: 2px solid #2ae1ff;
   outline-offset: 2px;
 }
 
+/* Body content */
 .modal__body {
   color: #cfe8ef;
   font-size: 0.95rem;
 }
 
-/* Reduced motion guard — we’ll add transitions in Step 6 */
-@media (prefers-reduced-motion: reduce) {
-  .modal__panel,
-  .modal__backdrop {
-    transition: none !important;
-  }
+/* Pixel-art image helpers */
+.modal__figure {
+  margin: 0.75rem 0 0;
+}
+.modal__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.modal__caption {
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: 0.25rem;
 }
 
-/* Give keyboard users a visible ring when tabbing to hotspots */
-.apartment-btn:focus-visible,
-.control-btn:focus-visible {
-  outline: 2px solid #2ae1ff;
-  outline-offset: 2px;
+/* Respect reduced motion: no transitions, no movement */
+@media (prefers-reduced-motion: reduce) {
+  .modal__backdrop,
+  .modal__panel {
+    transition: none !important;
+  }
+  .modal__panel {
+    transform: none !important;
+    opacity: 1 !important;
+  }
 }

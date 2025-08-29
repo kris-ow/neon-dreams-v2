@@ -13,24 +13,30 @@ import { initApartmentDialogs } from "./modules/initApartmentDialogs.js";
 import { initKeyboardShortcuts } from "./modules/keyboardShortcuts.js";
 
 // === CONTENT LIVES HERE ===============================================
-// 1) Audio playlist (content)
+// Audio playlist
 const PLAYLIST = [
   "/assets/audio/highway-of-light.mp3",
   "/assets/audio/dreamscape-nocturne.mp3",
 ];
 
-// 2) Apartment dialogs (content)
+// Apartment dialogs
 const DIALOGS_REGISTRY = {
   "ap-00": {
-    title: "Apartment 0",
-    content: `<p>Welcome to Apartment 0!</p>`,
+    title: "Welcome toApartment 0",
+    content: `<p>Inside</p>`,
     closeLabel: "Close dialog",
   },
   "ap-03": {
-    title: "Apartment 3",
+    title: "Welcome to Apartment 3",
     content: `
-      <p>Welcome to Apartment 3!</p>
-      <p>This is a classy space with a beautiful view.</p>
+      <figure class="modal__figure">
+        <img
+          class="modal__img"
+          src="/assets/images/apartments/ap-03/apartment-3-inside.png"
+          alt="Interior of Apartment 3"
+          loading="lazy"
+        />
+      </figure>
     `,
     closeLabel: "Close dialog",
   },
