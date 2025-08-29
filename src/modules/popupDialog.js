@@ -1,6 +1,6 @@
 // src/modules/popupDialog.js
-// Step 3: open/close API with background inert/aria-hidden + focus restore.
-// Focus trap + ESC/overlay close will be added in Step 4.
+// Step 4: focus trap + ESC + overlay click
+// (Still includes Step 3: inert/aria-hidden + focus restore)
 
 function getTabbables(root) {
   const selector = [
@@ -26,7 +26,6 @@ export function createPopupDialog({
   content = "",
   closeLabel = "Close dialog",
   container = document.body,
-  // Pass the background container to inert (your .stage element):
   stage = document.querySelector(".stage"),
 }) {
   const titleId = `dlg-title-${id}`;
@@ -39,9 +38,20 @@ export function createPopupDialog({
   modal.setAttribute("aria-labelledby", titleId);
   modal.dataset.open = "false";
 
-  // Backdrop (overlay) — wired in Step 4
+  // Backdrop
   const backdrop = document.createElement("div");
   backdrop.className = "modal__backdrop";
+
+  // Focus sentinels (visually hidden; help trap focus)
+  const startSentinel = document.createElement("div");
+  startSentinel.tabIndex = 0;
+  startSentinel.setAttribute("aria-hidden", "true");
+  Object.assign(startSentinel.style, { position: "fixed", width: "1px", height: "1px", overflow: "hidden", left: "-9999px", top: "0" });
+
+  const endSentinel = document.createElement("div");
+  endSentinel.tabIndex = 0;
+  endSentinel.setAttribute("aria-hidden", "true");
+  Object.assign(endSentinel.style, { position: "fixed", width: "1px", height: "1px", overflow: "hidden", left: "-9999px", top: "0" });
 
   // Panel
   const panel = document.createElement("div");
@@ -68,22 +78,21 @@ export function createPopupDialog({
   else if (content instanceof Node) body.appendChild(content);
 
   panel.append(h2, closeBtn, body);
-  modal.append(backdrop, panel);
+  // Order: backdrop (for clicks), sentinels, panel, sentinel
+  modal.append(backdrop, startSentinel, panel, endSentinel);
   container.appendChild(modal);
 
   // --- State
-  let opener = null;        // element that triggered open()
+  let opener = null;
   let usedAriaHidden = false;
 
   // --- Inert helpers
   function setBackgroundInert(on) {
     if (!stage) return;
-    // Prefer the inert attribute if supported
     if ("inert" in HTMLElement.prototype) {
       stage.inert = !!on;
       usedAriaHidden = false;
     } else {
-      // Fallback: aria-hidden on the non-dialog content
       if (on) {
         stage.setAttribute("aria-hidden", "true");
         usedAriaHidden = true;
@@ -94,61 +103,112 @@ export function createPopupDialog({
     }
   }
 
-  // --- Focus helpers
-  function moveFocusIntoDialog() {
-    // Prefer focusing the title, then first focusable; fallback to panel
+  // --- Focus move helpers
+  function getCycleTargets() {
     const tabbables = getTabbables(panel);
-    // If the title is focusable by default? (h2 isn't) -> keep fallback behavior.
-    if (tabbables.length > 0) {
-      tabbables[0].focus();
-    } else {
-      panel.focus();
-    }
+    if (tabbables.length === 0) return { first: panel, last: panel, list: [] };
+    return { first: tabbables[0], last: tabbables[tabbables.length - 1], list: tabbables };
+  }
+
+  function moveFocusIntoDialog() {
+    const { list, first } = getCycleTargets();
+    if (list.length > 0) first.focus();
+    else panel.focus();
   }
 
   function restoreFocus() {
     if (isInDocument(opener)) {
       try { opener.focus(); } catch {}
-    } else {
-      // Fallback: focus the stage so keyboard users have a sane target
-      if (stage && isInDocument(stage)) {
-        stage.focus?.();
-      }
+    } else if (stage && isInDocument(stage)) {
+      stage.focus?.();
     }
     opener = null;
   }
 
-  // --- Public API
+  // --- Open/Close
   function open() {
     if (modal.dataset.open === "true") return;
     opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
-    // Show dialog
     modal.dataset.open = "true";
-
-    // Inert background
     setBackgroundInert(true);
 
-    // Move focus into dialog
-    // Delay to ensure it's in the tree and display style is applied.
-    // (No rAF loop; a microtask is enough.)
     Promise.resolve().then(moveFocusIntoDialog);
   }
 
   function close() {
     if (modal.dataset.open !== "true") return;
 
-    // Hide dialog
     modal.dataset.open = "false";
-
-    // Restore background
     setBackgroundInert(false);
-
-    // Restore focus to opener (if still around)
     restoreFocus();
   }
 
-  // Wire the ✕ button (overlay/ESC will be added in Step 4)
+  // --- Focus trap with sentinels and Tab wrapping
+  function handleSentinelFocus(e, which) {
+    if (modal.dataset.open !== "true") return;
+    const { first, last, list } = getCycleTargets();
+    if (list.length === 0) {
+      panel.focus();
+      return;
+    }
+    if (which === "start") {
+      // Shift+Tab from first should land here -> send to last
+      last.focus();
+    } else {
+      // Tab from last should land here -> send to first
+      first.focus();
+    }
+  }
+
+  startSentinel.addEventListener("focus", () => handleSentinelFocus(null, "start"));
+  endSentinel.addEventListener("focus", () => handleSentinelFocus(null, "end"));
+
+  // Handle Tab/Shift+Tab inside the modal
+  modal.addEventListener("keydown", (e) => {
+    if (modal.dataset.open !== "true") return;
+
+    // ESC to close
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      e.preventDefault();
+      close();
+      return;
+    }
+
+    // Trap Tab within the dialog
+    if (e.key === "Tab") {
+      const { first, last, list } = getCycleTargets();
+
+      if (list.length === 0) {
+        e.preventDefault();
+        panel.focus();
+        return;
+      }
+
+      const active = document.activeElement;
+      if (e.shiftKey) {
+        if (active === first || active === panel) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+  });
+
+  // Overlay click to close (ignore clicks inside panel)
+  backdrop.addEventListener("click", (e) => {
+    if (modal.dataset.open !== "true") return;
+    // Click target is backdrop => outside the panel
+    close();
+  });
+
+  // Close button
   closeBtn.addEventListener("click", close);
 
   return {
