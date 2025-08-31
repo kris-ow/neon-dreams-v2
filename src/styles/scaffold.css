@@ -8,6 +8,7 @@
 
   /* runtime from JS */
   --computed-scale: 1;
+  --parallax-cut: 0px; 
 }
 
 
@@ -26,7 +27,10 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  height: calc(var(--design-h) * var(--scale) * var(--computed-scale));
+  height: calc(
+    var(--design-h) * var(--scale) * var(--computed-scale)
+    - var(--parallax-cut)
+  );
 }
 
 .stage {
@@ -34,6 +38,7 @@ body {
   width: calc(var(--design-w) * var(--scale));
   height: calc(var(--design-h) * var(--scale));
   transform-origin: top left;
+  overflow: hidden;  
 }
 
 /* One layer for now */
@@ -167,7 +172,7 @@ body {
   overflow: auto;
   padding: 20px;
   background: #0c0f14;
-  border: 2px solid #2ae1ff;
+  border: 2px solid #5f949b;
   border-radius: 8px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
   box-sizing: border-box;

@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const designHeight = zonesData?.meta?.designHeight ?? 2600;
 
   const adapter = createLayoutAdapter({ stage, designWidth, designHeight });
-  createDevOverlay({ stage, zonesData, adapter, initiallyVisible: true });
+  createDevOverlay({ stage, zonesData, adapter, initiallyVisible: false });
 
   // Only make apartments clickable that have content defined here
   const enabledApartmentIds = Object.keys(DIALOGS_REGISTRY);
