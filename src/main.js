@@ -24,8 +24,8 @@ const PLAYLIST = [
 // Apartment dialogs
 const DIALOGS_REGISTRY = {
   "ap-00": {
-    title: "Welcome toApartment 0",
-    content: `<p>Inside</p>`,
+    title: "Welcome to Apartment 0",
+    content: `<p>Here will an image of the interior of Apartment 0</p>`,
     closeLabel: "Close dialog",
   },
   "ap-03": {

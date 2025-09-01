@@ -9,8 +9,18 @@
   /* runtime from JS */
   --computed-scale: 1;
   --parallax-cut: 0px; 
-}
 
+  /* outline colors */  
+  --outline-color-primary: rgba(37, 202, 193, 0.75);
+  --outline-color-secondary: rgba(195, 142, 129, 0.75);
+  --outline-color-accent: #e17613;
+  --outline-color-dark: rgba(16, 88, 84, 0.9);
+  --ap-outline-color: var(--outline-color-secondary);
+  --ap-outline-width: 2px;
+  --ap-outline-offset: 0;   /* tweak if you want the line to sit inside/outside */
+  --focus-outline-color: var(--outline-color-secondary);
+  --debug-outline-color: var(--outline-color-accent);
+}
 
 html, body { 
   height: 100%;
@@ -66,7 +76,34 @@ body {
 
 .layer { pointer-events: none; }
 
-.zone-box {  border: 1px dashed rgba(0, 255, 255, 0.9); }
+.hotspot {
+  outline: none;
+}
+
+.hotspot:focus-visible {
+  outline: var(--ap-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--ap-outline-offset);
+}
+
+.hotspot.is-selected {
+  outline: var(--ap-outline-width) solid var(--ap-outline-color);
+  outline-offset: var(--ap-outline-offset);
+}
+
+/* Apartments: focus + selected outline (CSS-only) */
+.stage .apartment-btn:focus { outline: none; }
+.stage .apartment-btn:focus-visible {
+  outline: var(--ap-outline-width) solid var(--ap-outline-color);
+  outline-offset: var(--ap-outline-offset);
+}
+.stage .apartment-btn.is-selected,
+.stage .apartment-btn[aria-selected="true"],
+.stage .apartment-btn[data-selected="true"] {
+  outline: var(--ap-outline-width) solid var(--ap-outline-color);
+  outline-offset: var(--ap-outline-offset);
+}
+
+.zone-box {  border: 1px dashed var(--debug-outline-color); }
 
 .zone-label {
   position: absolute;
@@ -77,14 +114,14 @@ body {
   font-size: 10px;
   line-height: 1;
   background: rgba(0, 0, 0, 0.6);
-  color: #0ff;
+  color: var(--outline-color-primary);
   pointer-events: none;
 }
 
 .control-btn { outline: none; }
 .control-btn:focus { outline: none; }
 .control-btn:focus-visible {
-  outline: 2px solid rgba(0, 255, 255, 0.9);
+  outline: 2px solid var(--outline-color-secondary);
   outline-offset: 0;
   border-radius: 2px;
 }
@@ -172,7 +209,7 @@ body {
   overflow: auto;
   padding: 20px;
   background: #0c0f14;
-  border: 2px solid #5f949b;
+  border: 2px solid var(--outline-color-primary);
   border-radius: 8px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
   box-sizing: border-box;
@@ -196,7 +233,7 @@ body {
   color: #e6f7ff;
 }
 .modal__title:focus-visible {
-  outline: 2px solid #2ae1ff;
+  outline: 2px solid var(--outline-color-dark);
   outline-offset: 2px;
 }
 
@@ -219,13 +256,13 @@ body {
   place-items: center;
 }
 .modal__close:focus-visible {
-  outline: 2px solid #2ae1ff;
+  outline: 2px solid var(--outline-color-primary);
   outline-offset: 2px;
 }
 
 /* Body content */
 .modal__body {
-  color: #cfe8ef;
+  color: #cfe8ef; 
   font-size: 0.95rem;
 }
 

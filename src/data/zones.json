@@ -15,7 +15,7 @@
       "id": "bb-play",
       "label": "Billboard Play/Pause",
       "type": "control",
-      "rect": { "xPct": 55.7, "yPct": 6.1, "wPct": 7.9, "hPct": 2.6 },
+      "rect": { "xPct": 55.7, "yPct": 6.0, "wPct": 7.9, "hPct": 2.8 },
       "action": "control-play-toggle"
     },
     {
