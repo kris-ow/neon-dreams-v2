@@ -121,7 +121,7 @@ body {
 .control-btn { outline: none; }
 .control-btn:focus { outline: none; }
 .control-btn:focus-visible {
-  outline: 2px solid var(--outline-color-secondary);
+  outline: 3px solid var(--outline-color-secondary);
   outline-offset: 0;
   border-radius: 2px;
 }
@@ -295,4 +295,13 @@ body {
     transform: none !important;
     opacity: 1 !important;
   }
+}
+
+@keyframes sprite-anim {
+  from { background-position: 0 0; }
+  to   { background-position: calc(var(--frame-w) * var(--frames) * -1) 0; }
+}
+@keyframes sprite-anim-y {
+  from { background-position: 0 0; }
+  to   { background-position: 0 calc(var(--frame-h) * var(--frames) * -1); }
 }

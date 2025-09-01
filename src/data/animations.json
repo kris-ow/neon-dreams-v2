@@ -1,0 +1,9 @@
+{
+    "ap-01": {
+        "type": "sprite-steps",
+        "frames": 4,
+        "fps": 4,
+        "layout": "horizontal",
+        "sprite": "/assets/images/apartments/ap-01/apartment-1.png"
+    }
+}

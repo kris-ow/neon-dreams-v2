@@ -2,6 +2,7 @@
 import "./styles/scaffold.css";
 import zonesData from "./data/zones.json";
 import parallaxConfig from "./data/parallax.json";
+import animations from "./data/animations.json";
 
 import { createLayoutAdapter } from "./modules/layoutAdapter.js";
 import { createDevOverlay } from "./modules/devOverlay.js";
@@ -12,6 +13,7 @@ import { initAudio } from "./modules/initAudio.js";
 import { initApartmentDialogs } from "./modules/initApartmentDialogs.js";
 import { initKeyboardShortcuts } from "./modules/keyboardShortcuts.js";
 import { enableArrowNavigation } from "./modules/hotspotArrowNav.js";
+import { initAnimations } from "./modules/animation.js";
 
 
 // === CONTENT LIVES HERE ===============================================
@@ -77,4 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Optional: keep your debug log
   controls.onControl((payload) => console.log("[controls] activated:", payload));
+
+  // Animations (data-driven)
+  initAnimations({ stage, config: animations, zonesData });
 });
